@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+// using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -18,9 +19,23 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private int crouchEndFrames;
     [SerializeField]
+    private int jumpStartupFrames;
+
+    [SerializeField]
     private State[] cancellableIntoCrouch; //What states can be cancelled into crouch
     [SerializeField]
     private State[] cancellableIntoIdle;
+    [SerializeField]
+    private State[] cancellableIntoJump;
+
+
+
+    [Header("Jump arc")]
+    [SerializeField]
+    private float jumpArcFrames;
+    [SerializeField]
+    private float jumpArcHeight;
+
     
     [Header("Set in runtime")]
     public bool actionable = true;
@@ -31,6 +46,7 @@ public class PlayerController : MonoBehaviour
         Crouch,
         CrouchEnd,
         JumpStart,
+        Airborn
     }
 
 
@@ -42,7 +58,15 @@ public class PlayerController : MonoBehaviour
             if(stateAnimation[(int)value] == "Hold"){
                 //Ignore animation
             } else {
-                animator.CrossFade(stateAnimation[(int)value], stateAnimationTransition[(int)value]);
+                print("Changing animation to: " + stateAnimation[(int)value]);
+                //Get transition time
+                float transTime = 0f;
+                foreach(var transitionTime in stateAnimationTransition){
+                    if(transitionTime.fromState == state && transitionTime.toState == value){
+                        transTime = transitionTime.transitionTime;
+                    }
+                }
+                animator.CrossFade(stateAnimation[(int)value], transTime);
                 //Play the proper animation
             }
             _state = value;
@@ -52,7 +76,13 @@ public class PlayerController : MonoBehaviour
     [Header("Use \"Hold\" when an animation will be the same as the previous state, these will be ignored when the state changes")]
     
     [SerializeField] private string[] stateAnimation = new string[Enum.GetValues(typeof(State)).Length]; 
-    [SerializeField] private float[] stateAnimationTransition = new float[Enum.GetValues(typeof(State)).Length]; 
+    [Serializable]
+    struct AnimationTransitionTime{
+        public State fromState;
+        public State toState;
+        public float transitionTime;
+    }
+    [SerializeField] private AnimationTransitionTime[] stateAnimationTransition = new AnimationTransitionTime[Enum.GetValues(typeof(State)).Length]; 
 
     private State _state = State.Idle;
     /// <summary>
@@ -63,10 +93,10 @@ public class PlayerController : MonoBehaviour
 
     private bool Airborn {
         get{
-            return transform.position.y == -2.5f;
+            return transform.position.y != -2.5f;
         }
     }
-
+    private float xVel = 0;
     private void Start() {
         animator = GetComponentInChildren<Animator>();
         print("Creating a new player");
@@ -116,7 +146,12 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate() {
         //Clamp the position
-        transform.position = (transform.position.y < -2.5) ? new Vector3(transform.position.x, -2.5f, transform.position.z) : transform.position; 
+        // transform.position = (transform.position.y > -2.5) ? new Vector3(transform.position.x, -2.5f, transform.position.z) : transform.position; 
+        if(transform.position.y < -2.5f){
+            print("Went out of bounds");
+            print(transform.position.y);
+            transform.position = new Vector3(transform.position.x, -2.5f, transform.position.z);
+        }
         // This is going to be used to create game "ticks" where every action takes a certain number of ticks to complete
         
         switch (state)
@@ -131,11 +166,42 @@ public class PlayerController : MonoBehaviour
                 break;
             case State.CrouchEnd:
                 framesActive += 1;
+
                 if(framesActive == crouchEndFrames){
+                    // print("Crouch ended");
                     framesActive = 0;
                     state = State.Idle;
                 }
                 break;
+            case State.JumpStart:
+                framesActive += 1;
+                if(framesActive == jumpStartupFrames){
+                    print("Going arborn");
+                    framesActive = 0;
+                    state = State.Airborn;
+                    transform.position = new Vector3(transform.position.x + xVel, -2.499f, transform.position.z);
+                }
+                break;
+            case State.Airborn:
+                print("Went airborn");
+                //While airborn, we will move through a predetermined jump arc
+                //I am using this instead of rigidbodies because we can use incredibly simple math and no collisions
+                //Equation is (-x^2+20x)/40
+                // The bottom of the fraction determines max height somehow
+                // The 20x determines the frames in the air
+                if(Airborn){
+                    float h = jumpArcFrames / 2f;
+                    float k = jumpArcHeight;
+                    float yPos = -(h/(k*k)) * (framesActive - h) * (framesActive - h) + k - 2.499f;
+                    transform.position = new Vector3(transform.position.x + xVel, yPos , transform.position.z);
+                    print(transform.position.y);
+                    framesActive += 1;
+                } else {
+                    print("Landed");
+                    state = State.Idle;
+                }
+                break;
+                
             default:
                 
                 break;
@@ -145,11 +211,26 @@ public class PlayerController : MonoBehaviour
             case State.CrouchStart:
                 if(cancellableIntoCrouch.Contains(state)){
                     state = bufferState;
+                    framesActive = 0;
                 }
                 break;
             case State.Idle:
                 if(cancellableIntoIdle.Contains(state)){
                     state = bufferState;
+                    framesActive = 0;
+                }
+                break;
+            case State.CrouchEnd:
+                //This doesn't need to check if it is cancellable since it will always come from a crouch
+                state = bufferState;
+                
+                bufferState = State.Idle;
+                framesActive = 0;
+                break;
+            case State.JumpStart:
+                if(cancellableIntoJump.Contains(state)){
+                    state = bufferState;
+                    framesActive = 0;
                 }
                 break;
             default:

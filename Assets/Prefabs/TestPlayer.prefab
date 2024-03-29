@@ -781,17 +781,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a665d93f8ba37ffb8b32db60c42920a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crouchStartupFrames: 0
-  crouchEndFrames: 0
+  crouchStartupFrames: 3
+  crouchEndFrames: 3
+  jumpStartupFrames: 5
   cancellableIntoCrouch: 00000000
   cancellableIntoIdle: 
+  cancellableIntoJump: 00000000010000000200000003000000
+  jumpArcFrames: 0
+  jumpArcHeight: 0
   actionable: 1
   stateAnimation:
-  - Idle
+  - IdleAnim
   - Crouch
   - Hold
   - Hold
-  - Idle
+  - Jump
+  - IdleAnim
+  stateAnimationTransition:
+  - fromState: 3
+    toState: 0
+    transitionTime: 0.25
   bufferState: 0
 --- !u!1 &3726105978068942533
 GameObject:
