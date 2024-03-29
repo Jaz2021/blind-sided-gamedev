@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
+
 // using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,11 +32,14 @@ public class PlayerController : MonoBehaviour
 
 
 
-    [Header("Jump arc")]
+    [Header("Character stats")]
     [SerializeField]
-    private float jumpArcFrames;
+    private float gravity;
     [SerializeField]
-    private float jumpArcHeight;
+    private float jumpVel;
+    [SerializeField]
+    private float baseHealth;
+
 
     
     [Header("Set in runtime")]
@@ -90,6 +95,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public State bufferState = State.Idle;
     private int framesActive = 0;
+    private float yVel = 0;
+    
 
     private bool Airborn {
         get{
@@ -97,6 +104,13 @@ public class PlayerController : MonoBehaviour
         }
     }
     private float xVel = 0;
+    private void Update() {
+        if(transform.position.y < -2.5f){
+            print("Went out of bounds");
+            print(transform.position.y);
+            transform.position = new Vector3(transform.position.x, -2.5f, transform.position.z);
+        }
+    }
     private void Start() {
         animator = GetComponentInChildren<Animator>();
         print("Creating a new player");
@@ -144,16 +158,20 @@ public class PlayerController : MonoBehaviour
         }
     
     }
+    private void setPos(){
+        if(transform.position.y > -2.5f){
+            yVel -= gravity;
+            transform.position = new Vector3(transform.position.x + xVel, transform.position.y + yVel, transform.position.z);
+        } else if(transform.position.y < -2.5f){
+            transform.position = new Vector3(transform.position.x + xVel, -2.5f, transform.position.z);
+        }
+    }
     private void FixedUpdate() {
         //Clamp the position
         // transform.position = (transform.position.y > -2.5) ? new Vector3(transform.position.x, -2.5f, transform.position.z) : transform.position; 
-        if(transform.position.y < -2.5f){
-            print("Went out of bounds");
-            print(transform.position.y);
-            transform.position = new Vector3(transform.position.x, -2.5f, transform.position.z);
-        }
+        //Setting position in fixedUpdate so that game ticks will always see the proper position of the player
         // This is going to be used to create game "ticks" where every action takes a certain number of ticks to complete
-        
+        setPos();
         switch (state)
         {
             case State.CrouchStart:
@@ -180,24 +198,18 @@ public class PlayerController : MonoBehaviour
                     framesActive = 0;
                     state = State.Airborn;
                     transform.position = new Vector3(transform.position.x + xVel, -2.499f, transform.position.z);
+                    yVel = jumpVel;
                 }
                 break;
             case State.Airborn:
                 print("Went airborn");
-                //While airborn, we will move through a predetermined jump arc
-                //I am using this instead of rigidbodies because we can use incredibly simple math and no collisions
-                //Equation is (-x^2+20x)/40
                 // The bottom of the fraction determines max height somehow
                 // The 20x determines the frames in the air
                 if(Airborn){
-                    float h = jumpArcFrames / 2f;
-                    float k = jumpArcHeight;
-                    float yPos = -(h/(k*k)) * (framesActive - h) * (framesActive - h) + k - 2.499f;
-                    transform.position = new Vector3(transform.position.x + xVel, yPos , transform.position.z);
-                    print(transform.position.y);
                     framesActive += 1;
                 } else {
                     print("Landed");
+                    framesActive = 0;
                     state = State.Idle;
                 }
                 break;

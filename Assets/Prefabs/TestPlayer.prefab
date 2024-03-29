@@ -787,8 +787,9 @@ MonoBehaviour:
   cancellableIntoCrouch: 00000000
   cancellableIntoIdle: 
   cancellableIntoJump: 00000000010000000200000003000000
-  jumpArcFrames: 0
-  jumpArcHeight: 0
+  gravity: 0.5
+  jumpVel: 5
+  baseHealth: 0
   actionable: 1
   stateAnimation:
   - IdleAnim
