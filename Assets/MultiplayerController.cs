@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +21,6 @@ public class MultiplayerController : MonoBehaviour
             //There can be only one
         }
     }
-    private bool[] playerReady = {false, false};
     /// <summary>
     /// Returns the correct start position for each player
     /// </summary>
@@ -33,21 +31,5 @@ public class MultiplayerController : MonoBehaviour
     }
     public Quaternion GetStartRotation(int player){
         return startRotations[player - 1];
-    }
-    public void PlayerReady(int player){
-        
-        playerReady[player - 1] = true;
-        print("Player status: " + playerReady[0] + " " + playerReady[1]);
-
-        if(playerReady[player % 2]){
-            print("Players are actionable");
-            PlayerController p1 = player1.GetComponent<PlayerController>();
-            PlayerController p2 = player2.GetComponent<PlayerController>();
-            p1.SetOtherPlayer(p2);
-            p2.SetOtherPlayer(p1);
-            p1.actionable = true;
-            p2.actionable = true;
-        }
-
     }
 }

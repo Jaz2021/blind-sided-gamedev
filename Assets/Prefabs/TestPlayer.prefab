@@ -55,10 +55,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 369252146944662915}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: -0, y: -0, z: 0.12603799, w: 0.9920255}
 =======
   m_LocalRotation: {x: -0, y: -0, z: 0.714994, w: 0.69913065}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: -0, y: -0, z: 0.28198412, w: 0.95941913}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 2.1368327, y: 0.04781902, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -155,10 +159,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841493578413478592}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: -0.9645934, w: 0.26374146}
 =======
   m_LocalRotation: {x: 0, y: 0, z: -0.9500052, w: -0.31223416}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: 0.5577409, w: 0.8300151}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 0.9367665, y: -0.021062857, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -654,10 +662,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2837793897376385876}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: 0.7372282, w: 0.6756439}
 =======
   m_LocalRotation: {x: 0, y: 0, z: 0.86468166, w: 0.5023204}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: 0.28509882, w: 0.9584981}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 1.914771, y: 0.008477211, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -726,7 +738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1160920646
+  GlobalObjectIdHash: 3121945578
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -799,8 +811,8 @@ MonoBehaviour:
   cancellableIntoCrouch: 00000000
   cancellableIntoIdle: 
   cancellableIntoJump: 00000000010000000200000003000000
-  gravity: 0.03
-  jumpVel: 0.4
+  gravity: 0.5
+  jumpVel: 5
   baseHealth: 0
   actionable: 1
   stateAnimation:
@@ -809,14 +821,11 @@ MonoBehaviour:
   - Hold
   - Hold
   - Jump
-  - Falling
+  - IdleAnim
   stateAnimationTransition:
   - fromState: 3
     toState: 0
     transitionTime: 0.25
-  - fromState: 5
-    toState: 0
-    transitionTime: 0.07
   bufferState: 0
 --- !u!1 &3726105978068942533
 GameObject:
@@ -842,10 +851,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3726105978068942533}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: -0, y: 0, z: 0.94755316, w: -0.31959817}
 =======
   m_LocalRotation: {x: -0, y: 0, z: 0.9197406, w: -0.39252672}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: -0, y: 0, z: 0.7733476, w: -0.6339822}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: -0.01814492, y: -0.09786172, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -878,10 +891,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3755740607695297534}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: 0.89264804, w: 0.45075443}
 =======
   m_LocalRotation: {x: 0, y: 0, z: 0.9556953, w: 0.294358}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: 0.14788534, w: 0.98900455}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 2.0473983, y: 0.066022515, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -914,10 +931,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3787037976414516923}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: -0.36250225, w: 0.93198293}
 =======
   m_LocalRotation: {x: 0, y: 0, z: -0.45330575, w: 0.89135516}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: 0.0038752458, w: 0.99999255}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 2.0190096, y: -0.0034382343, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1111,10 +1132,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7010802779126220268}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: 0.9992235, w: -0.039401747}
 =======
   m_LocalRotation: {x: 0, y: 0, z: 0.98689526, w: 0.16136198}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: 0.9178139, w: 0.397011}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: -0.026249994, y: 0.035289116, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1147,10 +1172,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7298902231760498150}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: -0.91206264, w: 0.41005093}
 =======
   m_LocalRotation: {x: 0, y: 0, z: -0.8945875, w: -0.4468929}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: -0.6946439, w: 0.71935374}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 0.9240238, y: -0.035721943, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1183,10 +1212,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7582187478555292472}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: -0.5280639, w: 0.8492047}
 =======
   m_LocalRotation: {x: 0, y: 0, z: -0.14506602, w: 0.989422}
 >>>>>>> refs/remotes/origin/main
+=======
+  m_LocalRotation: {x: 0, y: 0, z: -0.00528867, w: 0.999986}
+>>>>>>> parent of 5fc375d5 (Started walking logic)
   m_LocalPosition: {x: 1.8147187, y: 0.022922516, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

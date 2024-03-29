@@ -12,7 +12,6 @@ public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
     private const float secondsPerTick = 1f/60f;
-    private PlayerController otherPlayer;
     private Animator animator;
     [Header("Set in inspector")]
     [Header("Action timings")]
@@ -40,15 +39,11 @@ public class PlayerController : MonoBehaviour
     private float jumpVel;
     [SerializeField]
     private float baseHealth;
-    [SerializeField]
-    private float walkSpeed;
-    [SerializeField]
-    private float runSpeed;
 
 
     
-    [HideInInspector]
-    public bool actionable = false;
+    [Header("Set in runtime")]
+    public bool actionable = true;
     [SerializeField]
     public enum State{
         Idle,
@@ -56,10 +51,7 @@ public class PlayerController : MonoBehaviour
         Crouch,
         CrouchEnd,
         JumpStart,
-        Airborn,
-        WalkRight,
-        WalkLeft,
-        BlockReady
+        Airborn
     }
 
 
@@ -111,8 +103,7 @@ public class PlayerController : MonoBehaviour
             return transform.position.y != -2.5f;
         }
     }
-    private float xVel = 0f;
-    private float bufferXVel = 0f;
+    private float xVel = 0;
     private void Update() {
         if(transform.position.y < -2.5f){
             print("Went out of bounds");
@@ -122,24 +113,18 @@ public class PlayerController : MonoBehaviour
     }
     private void Start() {
         animator = GetComponentInChildren<Animator>();
-        actionable = false;
         print("Creating a new player");
         if(MultiplayerController.s.player1 == null){
             MultiplayerController.s.player1 = gameObject;
             transform.position = MultiplayerController.s.GetStartPosition(1);
             transform.rotation = MultiplayerController.s.GetStartRotation(1);
-            MultiplayerController.s.PlayerReady(1);
         } else if(MultiplayerController.s.player2 == null){
             MultiplayerController.s.player2 = gameObject;
             transform.position = MultiplayerController.s.GetStartPosition(2);
             transform.rotation = MultiplayerController.s.GetStartRotation(2);
-            MultiplayerController.s.PlayerReady(2);
         } else {
             throw new System.Exception("Error: Attempted to have a third player join");
         }
-    }
-    public void SetOtherPlayer(PlayerController player){
-        otherPlayer = player;
     }
     public void moveInput(InputAction.CallbackContext context){
         Vector2 input = context.ReadValue<Vector2>();
@@ -147,15 +132,15 @@ public class PlayerController : MonoBehaviour
         // Left/right movements depend on up/down state but not vice versa
         //We never set our State here, only the bufferState
         State startBuffer = bufferState;
-        if(input.x == 0f){
+        if(input.x == 0){
             
-            if(input.y == 0f){
+            if(input.y == 0){
                 if(state == State.Crouch || state == State.CrouchStart){
                     bufferState = State.CrouchEnd;
                 } else {
                     bufferState = State.Idle;
                 }
-            } else if(input.y < 0f){
+            } else if(input.y < 0){
                 // print("Buffering crouch");
                 bufferState = State.CrouchStart;
             } else {
@@ -163,40 +148,9 @@ public class PlayerController : MonoBehaviour
                 bufferState = State.JumpStart;
             }
             
-        } else if(input.x > 0f){
-            if(otherPlayer.gameObject.transform.position.x > transform.position.x){
-                //If the other player is on the right of this player
-                if(input.y == 0f){
-                    if(state == State.Crouch || state == State.CrouchStart){
-                        bufferState = State.CrouchEnd;
-                        bufferXVel = 0f;
-                    } else {
-                        bufferState = State.WalkRight;
-                        bufferXVel = walkSpeed;
-                    }
-                } else if(input.y < 0){
-                    // print("Buffering crouch");
-                    bufferState = State.CrouchStart;
-                } else {
-                    //Y > 0
-                    bufferState = State.JumpStart;
-                }
-                if(bufferState != State.JumpStart){
-                    bufferState = State.WalkRight;
-                    bufferXVel = walkSpeed;
-                } else {
-                    //Jumping to the right
-                    bufferXVel = walkSpeed;
-                }
-            } else {
-                bufferState = State.BlockReady;
-            }
+        } else if(input.x > 0){
+
         } else if(input.x < 0){
-            if(otherPlayer.gameObject.transform.position.x < transform.position.x){
-                bufferState = State.WalkLeft;
-            } else {
-                bufferState = State.WalkRight;
-            }
 
         }
         if(startBuffer == bufferState){
@@ -213,16 +167,11 @@ public class PlayerController : MonoBehaviour
         }
     }
     private void FixedUpdate() {
-        
         //Clamp the position
         // transform.position = (transform.position.y > -2.5) ? new Vector3(transform.position.x, -2.5f, transform.position.z) : transform.position; 
         //Setting position in fixedUpdate so that game ticks will always see the proper position of the player
         // This is going to be used to create game "ticks" where every action takes a certain number of ticks to complete
         setPos();
-        if(!actionable){
-            //Prevent the player from having control if they aren't actionable
-            return;
-        }
         switch (state)
         {
             case State.CrouchStart:
@@ -296,7 +245,6 @@ public class PlayerController : MonoBehaviour
                     framesActive = 0;
                 }
                 break;
-            
             default:
                 break;
         }
