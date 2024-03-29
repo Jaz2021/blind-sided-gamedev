@@ -39,7 +39,12 @@ public class PlayerController : MonoBehaviour
             return _state;
         }
         set {
-
+            if(stateAnimation[(int)value] == "Hold"){
+                //Ignore animation
+            } else {
+                animator.CrossFade(stateAnimation[(int)value], stateAnimationTransition[(int)value]);
+                //Play the proper animation
+            }
             _state = value;
         }
     }
@@ -47,6 +52,8 @@ public class PlayerController : MonoBehaviour
     [Header("Use \"Hold\" when an animation will be the same as the previous state, these will be ignored when the state changes")]
     
     [SerializeField] private string[] stateAnimation = new string[Enum.GetValues(typeof(State)).Length]; 
+    [SerializeField] private float[] stateAnimationTransition = new float[Enum.GetValues(typeof(State)).Length]; 
+
     private State _state = State.Idle;
     /// <summary>
     /// The state that is next to come up. Typically is based on what button is being held
