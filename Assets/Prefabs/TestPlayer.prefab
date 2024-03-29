@@ -714,7 +714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3121945578
+  GlobalObjectIdHash: 1160920646
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -785,12 +785,13 @@ MonoBehaviour:
   crouchEndFrames: 3
   jumpStartupFrames: 5
   cancellableIntoCrouch: 00000000
-  cancellableIntoIdle: 
-  cancellableIntoJump: 00000000010000000200000003000000
+  cancellableIntoIdle: 0600000007000000
+  cancellableIntoJump: 000000000100000002000000030000000600000007000000
+  cancellableIntoWalk: 00000000
   gravity: 0.03
   jumpVel: 0.4
   baseHealth: 0
-  walkSpeed: 0
+  walkSpeed: 0.05
   runSpeed: 0
   actionable: 1
   stateAnimation:
@@ -800,11 +801,31 @@ MonoBehaviour:
   - Hold
   - Jump
   - Falling
+  - Walking
+  - Walking
+  - Walking
   stateAnimationTransition:
   - fromState: 3
     toState: 0
     transitionTime: 0.25
+  - fromState: 5
+    toState: 0
+    transitionTime: 0.1
+  - fromState: 0
+    toState: 6
+    transitionTime: 0.1
+  - fromState: 0
+    toState: 7
+    transitionTime: 0.1
+  - fromState: 6
+    toState: 0
+    transitionTime: 0.1
+  - fromState: 7
+    toState: 0
+    transitionTime: 0.1
   bufferState: 0
+  yVel: 0
+  xVel: 0
 --- !u!1 &3726105978068942533
 GameObject:
   m_ObjectHideFlags: 0

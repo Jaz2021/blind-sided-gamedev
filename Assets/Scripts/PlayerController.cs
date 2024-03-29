@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour
     private State[] cancellableIntoIdle;
     [SerializeField]
     private State[] cancellableIntoJump;
+    [SerializeField]
+    private State[] cancellableIntoWalk;
 
 
 
@@ -51,15 +53,15 @@ public class PlayerController : MonoBehaviour
     public bool actionable = false;
     [SerializeField]
     public enum State{
-        Idle,
-        CrouchStart,
-        Crouch,
-        CrouchEnd,
-        JumpStart,
-        Airborn,
-        WalkRight,
-        WalkLeft,
-        BlockReady
+        Idle, // 0
+        CrouchStart, //1
+        Crouch, // 2
+        CrouchEnd, // 3
+        JumpStart, // 4
+        Airborn, // 5
+        WalkRight, // 6
+        WalkLeft, // 7
+        BlockReady // 8
     }
 
 
@@ -103,7 +105,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public State bufferState = State.Idle;
     private int framesActive = 0;
-    private float yVel = 0;
+    public float yVel = 0;
     
 
     private bool Airborn {
@@ -111,7 +113,7 @@ public class PlayerController : MonoBehaviour
             return transform.position.y != -2.5f;
         }
     }
-    private float xVel = 0f;
+    public float xVel = 0f;
     private float bufferXVel = 0f;
     private void Update() {
         if(transform.position.y < -2.5f){
@@ -227,6 +229,7 @@ public class PlayerController : MonoBehaviour
         {
             case State.CrouchStart:
                 framesActive += 1;
+                yVel = 0;
                 if(framesActive == crouchStartupFrames){
                     framesActive = 0;
                     state = State.Crouch;
@@ -248,7 +251,8 @@ public class PlayerController : MonoBehaviour
                     print("Going arborn");
                     framesActive = 0;
                     state = State.Airborn;
-                    transform.position = new Vector3(transform.position.x + xVel, -2.499f, transform.position.z);
+                    transform.position = new Vector3(transform.position.x + bufferXVel, -2.499f, transform.position.z);
+                    xVel = bufferXVel;
                     yVel = jumpVel;
                 }
                 break;
@@ -264,7 +268,16 @@ public class PlayerController : MonoBehaviour
                     state = State.Idle;
                 }
                 break;
-                
+            case State.Idle:
+                xVel = 0;
+                yVel = 0;
+                break;
+            case State.WalkLeft:
+            case State.WalkRight:
+                yVel = 0;
+                break;
+            
+
             default:
                 
                 break;
@@ -296,20 +309,14 @@ public class PlayerController : MonoBehaviour
                     framesActive = 0;
                 }
                 break;
-            
+            case State.WalkRight:
+                if(cancellableIntoWalk.Contains(state)){
+                    xVel = walkSpeed;
+                    state = State.WalkRight;
+                }
+                break;
             default:
                 break;
         }
-    }
-    public void crouch(){
-        // Call to this player to go into crouch animation
-        // currentState = State.Crouch;
-        // animator?.Play("Crouch");
-    }
-    public void crouchRelease(){
-        // animator?.CrossFade(prevState.ToString(), 0.25f);
-        // State temp = currentState;
-        // currentState = prevState;
-        // prevState = temp;
     }
 }
