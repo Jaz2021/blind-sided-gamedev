@@ -1,10 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
-
 public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -22,41 +22,32 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private State[] cancellableIntoIdle;
     
-
-
-    [SerializeField] 
-    AnimationClip crouchAnim;
     [Header("Set in runtime")]
     public bool actionable = true;
+    [SerializeField]
     public enum State{
         Idle,
         CrouchStart,
         Crouch,
         CrouchEnd,
-        JumpStart
-    }
-    public enum AnimationState{
-        IdleAnim,
-        Crouch,
-        Airborn,
-        LightAttack,
-        HeavyAttack,
-        SpecialAttack,
-        CrouchLight,
-        CrouchHeavy,
-        CrouchSpecial,
-        Jump,
-        AirLight,
-        AirHeavy,
-        AirSpecial,
-        Block,
-        Damaged,
-        Walking,
-        Running
+        JumpStart,
     }
 
-    public AnimationState currentState = AnimationState.IdleAnim;
-    public State state = State.Idle;
+
+    public State state {
+        get {
+            return _state;
+        }
+        set {
+
+            _state = value;
+        }
+    }
+    [Header("Indexes correspond to State enum, see code for indexes")]
+    [Header("Use \"Hold\" when an animation will be the same as the previous state, these will be ignored when the state changes")]
+    
+    [SerializeField] private string[] stateAnimation = new string[Enum.GetValues(typeof(State)).Length]; 
+    private State _state = State.Idle;
     /// <summary>
     /// The state that is next to come up. Typically is based on what button is being held
     /// </summary>
@@ -93,8 +84,13 @@ public class PlayerController : MonoBehaviour
         if(input.x == 0){
             
             if(input.y == 0){
-                bufferState = State.Idle;
+                if(state == State.Crouch || state == State.CrouchStart){
+                    bufferState = State.CrouchEnd;
+                } else {
+                    bufferState = State.Idle;
+                }
             } else if(input.y < 0){
+                // print("Buffering crouch");
                 bufferState = State.CrouchStart;
             } else {
                 //Y > 0
@@ -115,6 +111,7 @@ public class PlayerController : MonoBehaviour
         //Clamp the position
         transform.position = (transform.position.y < -2.5) ? new Vector3(transform.position.x, -2.5f, transform.position.z) : transform.position; 
         // This is going to be used to create game "ticks" where every action takes a certain number of ticks to complete
+        
         switch (state)
         {
             case State.CrouchStart:
@@ -129,6 +126,22 @@ public class PlayerController : MonoBehaviour
                 framesActive += 1;
                 if(framesActive == crouchEndFrames){
                     framesActive = 0;
+                    state = State.Idle;
+                }
+                break;
+            default:
+                
+                break;
+        }
+        switch (bufferState)
+        {
+            case State.CrouchStart:
+                if(cancellableIntoCrouch.Contains(state)){
+                    state = bufferState;
+                }
+                break;
+            case State.Idle:
+                if(cancellableIntoIdle.Contains(state)){
                     state = bufferState;
                 }
                 break;
