@@ -42,6 +42,9 @@ public class MultiplayerController : MonoBehaviour
             p2.SetOtherPlayer(p1);
             p1.actionable = true;
             p2.actionable = true;
+            var c = Camera.main.GetComponent<CameraFollow>();
+            c.player1 = player1;
+            c.player2 = player2;
         }
     }
 }

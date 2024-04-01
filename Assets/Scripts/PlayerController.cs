@@ -8,13 +8,18 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
 public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
     private const float secondsPerTick = 1f/60f;
+
     private PlayerController otherPlayer;
     private Animator animator;
     [Header("Set in inspector")]
+    [Header("Sound effects")]
+    [SerializeField]
+    private AudioClip walkSound;
     [Header("Action timings")]
     [Header("Frames in this context refer to game ticks, using frames because thats the standard term in fighting games")]
     [SerializeField]
@@ -119,8 +124,8 @@ public class PlayerController : MonoBehaviour
     private float bufferXVel = 0f;
     private void Update() {
         if(transform.position.y < -2.5f){
-            print("Went out of bounds");
-            print(transform.position.y);
+            // print("Went out of bounds");
+            // print(transform.position.y);
             transform.position = new Vector3(transform.position.x, -2.5f, transform.position.z);
         }
     }
@@ -150,13 +155,15 @@ public class PlayerController : MonoBehaviour
         otherPlayer = player;
     }
     public void lightAttack(){
-
+        if(Airborn){
+            
+        }
     }
     public void heavyAttack(){
 
     }
     public void specialAttack(){
-        
+
     }
     public void moveInput(InputAction.CallbackContext context){
         Vector2 input = context.ReadValue<Vector2>();
@@ -177,7 +184,10 @@ public class PlayerController : MonoBehaviour
                 bufferState = State.CrouchStart;
             } else {
                 //Y > 0
-                bufferState = State.JumpStart;
+                if(!Airborn){
+                    bufferState = State.JumpStart;
+
+                }
             }
             
         } else if(input.x > 0f){
@@ -198,9 +208,11 @@ public class PlayerController : MonoBehaviour
                     bufferState = State.CrouchStart;
                 } else {
                     //Y > 0
-                    bufferState = State.JumpStart;
-                    bufferXVel = walkSpeed;
-
+                    if(!Airborn){
+                        bufferState = State.JumpStart;
+                        bufferXVel = walkSpeed;
+                    }
+                    
                 }
             // } else {
                 // bufferState = State.BlockReady;
@@ -221,8 +233,11 @@ public class PlayerController : MonoBehaviour
                     bufferState = State.CrouchStart;
                 } else {
                     //Y > 0
-                    bufferState = State.JumpStart;
-                    bufferXVel = -walkSpeed;
+                    if(!Airborn){
+                        bufferState = State.JumpStart;
+                        bufferXVel = -walkSpeed;
+                    }
+                    
                 }
 
         }
@@ -232,6 +247,9 @@ public class PlayerController : MonoBehaviour
     
     }
     private void setPos(){
+        if(otherPlayer == null){
+            return;
+        }
         if(!Airborn){
             // We don't turn around in the air
             if(otherPlayer.gameObject.transform.position.x > transform.position.x){
@@ -316,6 +334,7 @@ public class PlayerController : MonoBehaviour
             case State.WalkRight:
                 yVel = 0;
                 xVel = walkSpeed;
+                // AudioSource.PlayClipAtPoint(walkEffect, transform.position);
                 break;
             
 
