@@ -108,7 +108,8 @@ public class PlayerController : MonoBehaviour
     private int framesActive = 0;
     public float yVel = 0;
     
-
+    private Quaternion defaultRot;
+    private Quaternion otherRot;
     private bool Airborn {
         get{
             return transform.position.y != -2.5f;
@@ -131,11 +132,15 @@ public class PlayerController : MonoBehaviour
             MultiplayerController.s.player1 = gameObject;
             transform.position = MultiplayerController.s.GetStartPosition(1);
             transform.rotation = MultiplayerController.s.GetStartRotation(1);
+            defaultRot = transform.rotation;
+            otherRot = MultiplayerController.s.GetStartRotation(2);
             MultiplayerController.s.PlayerReady(1);
         } else if(MultiplayerController.s.player2 == null){
             MultiplayerController.s.player2 = gameObject;
             transform.position = MultiplayerController.s.GetStartPosition(2);
             transform.rotation = MultiplayerController.s.GetStartRotation(2);
+            otherRot = transform.rotation;
+            defaultRot = MultiplayerController.s.GetStartRotation(1);
             MultiplayerController.s.PlayerReady(2);
         } else {
             throw new System.Exception("Error: Attempted to have a third player join");
@@ -171,7 +176,9 @@ public class PlayerController : MonoBehaviour
                 //If the other player is on the right of this player
                 if(input.y == 0f){
                     if(state == State.Crouch || state == State.CrouchStart){
-                        bufferState = State.CrouchEnd;
+                        state = State.CrouchEnd;
+                        framesActive = 0;
+                        bufferState = State.WalkRight;
                         bufferXVel = 0f;
                     } else {
                         bufferState = State.WalkRight;
@@ -183,13 +190,8 @@ public class PlayerController : MonoBehaviour
                 } else {
                     //Y > 0
                     bufferState = State.JumpStart;
-                }
-                if(bufferState != State.JumpStart){
-                    bufferState = State.WalkRight;
                     bufferXVel = walkSpeed;
-                } else {
-                    //Jumping to the right
-                    bufferXVel = walkSpeed;
+
                 }
             // } else {
                 // bufferState = State.BlockReady;
@@ -197,7 +199,9 @@ public class PlayerController : MonoBehaviour
         } else if(input.x < 0){
             if(input.y == 0f){
                     if(state == State.Crouch || state == State.CrouchStart){
-                        bufferState = State.CrouchEnd;
+                        state = State.CrouchEnd;
+                        framesActive = 0;
+                        bufferState = State.WalkLeft;
                         bufferXVel = 0f;
                     } else {
                         bufferState = State.WalkLeft;
@@ -209,12 +213,6 @@ public class PlayerController : MonoBehaviour
                 } else {
                     //Y > 0
                     bufferState = State.JumpStart;
-                }
-                if(bufferState != State.JumpStart){
-                    bufferState = State.WalkLeft;
-                    bufferXVel = -walkSpeed;
-                } else {
-                    //Jumping to the right
                     bufferXVel = -walkSpeed;
                 }
 
@@ -225,6 +223,11 @@ public class PlayerController : MonoBehaviour
     
     }
     private void setPos(){
+        if(otherPlayer.gameObject.transform.position.x > transform.position.x){
+            transform.rotation = defaultRot;
+        } else {
+            transform.rotation = otherRot;
+        }
         if(transform.position.y > -2.5f){
             yVel -= gravity;
             transform.position = new Vector3(transform.position.x + xVel, transform.position.y + yVel, transform.position.z);
@@ -248,6 +251,8 @@ public class PlayerController : MonoBehaviour
             case State.CrouchStart:
                 framesActive += 1;
                 yVel = 0;
+                xVel = 0;
+                bufferXVel = 0;
                 if(framesActive == crouchStartupFrames){
                     framesActive = 0;
                     state = State.Crouch;
