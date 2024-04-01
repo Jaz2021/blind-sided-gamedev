@@ -223,11 +223,15 @@ public class PlayerController : MonoBehaviour
     
     }
     private void setPos(){
-        if(otherPlayer.gameObject.transform.position.x > transform.position.x){
-            transform.rotation = defaultRot;
-        } else {
-            transform.rotation = otherRot;
+        if(!Airborn){
+            // We don't turn around in the air
+            if(otherPlayer.gameObject.transform.position.x > transform.position.x){
+                transform.rotation = defaultRot;
+            } else {
+                transform.rotation = otherRot;
+            }
         }
+        
         if(transform.position.y > -2.5f){
             yVel -= gravity;
             transform.position = new Vector3(transform.position.x + xVel, transform.position.y + yVel, transform.position.z);
@@ -338,13 +342,13 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
             case State.WalkRight:
-                if(cancellableIntoWalk.Contains(state)){
+                if(cancellableIntoWalk.Contains(state) && state != State.WalkRight){
                     xVel = walkSpeed;
                     state = State.WalkRight;
                 }
                 break;
             case State.WalkLeft:
-                if(cancellableIntoWalk.Contains(state)){
+                if(cancellableIntoWalk.Contains(state) && state != State.WalkLeft){
                     xVel = -walkSpeed;
                     state = State.WalkLeft;
                 }

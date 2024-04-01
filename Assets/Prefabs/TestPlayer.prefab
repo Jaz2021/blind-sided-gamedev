@@ -54,7 +54,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 369252146944662915}
-  m_LocalRotation: {x: -0, y: -0, z: -0.21920645, w: 0.9756785}
+  m_LocalRotation: {x: -0, y: -0, z: 0.12603799, w: 0.9920255}
   m_LocalPosition: {x: 2.1368327, y: 0.04781902, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -150,7 +150,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841493578413478592}
-  m_LocalRotation: {x: 0, y: 0, z: -0.75709844, w: 0.65330094}
+  m_LocalRotation: {x: 0, y: 0, z: -0.9645934, w: 0.26374152}
   m_LocalPosition: {x: 0.9367665, y: -0.021062857, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -645,7 +645,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2837793897376385876}
-  m_LocalRotation: {x: 0, y: 0, z: 0.8361236, w: 0.54854107}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7372282, w: 0.6756439}
   m_LocalPosition: {x: 1.914771, y: 0.008477211, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -714,7 +714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3121945578
+  GlobalObjectIdHash: 3293601461
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -764,6 +764,54 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 59a6df7a-36f0-41fa-85e7-cc07da41bde8
     m_ActionName: Player/Movement[/Gamepad/dpad/up,/Gamepad1/dpad/up,/Gamepad/dpad/down,/Gamepad1/dpad/down,/Gamepad/dpad/left,/Gamepad1/dpad/left,/Gamepad/dpad/right,/Gamepad1/dpad/right,/Gamepad/leftStick/up,/Gamepad1/leftStick/up,/Gamepad/leftStick/down,/Gamepad1/leftStick/down,/Gamepad/leftStick/left,/Gamepad1/leftStick/left,/Gamepad/leftStick/right,/Gamepad1/leftStick/right]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1850726544152639127}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: lightAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 1766c385-29f0-4d3c-b5af-149488e537ed
+    m_ActionName: Player/LightAttack[/Gamepad/buttonWest,/Gamepad1/buttonWest,/Keyboard/j]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1850726544152639127}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: heavyAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 30b184c0-5354-4c6b-ba4c-33ac692057a7
+    m_ActionName: Player/HeavyAttack[/Gamepad/buttonNorth,/Gamepad1/buttonNorth,/Keyboard/k]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1850726544152639127}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: specialAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 591f3b29-4cd5-4dea-b1ad-137cb01377f6
+    m_ActionName: Player/SpecialAttack[/Gamepad/buttonEast,/Gamepad1/buttonEast,/Keyboard/l]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -784,14 +832,14 @@ MonoBehaviour:
   crouchStartupFrames: 3
   crouchEndFrames: 3
   jumpStartupFrames: 5
-  cancellableIntoCrouch: 00000000
-  cancellableIntoIdle: 
-  cancellableIntoJump: 00000000010000000200000003000000
-  cancellableIntoWalk: 
+  cancellableIntoCrouch: 000000000600000007000000
+  cancellableIntoIdle: 0600000007000000
+  cancellableIntoJump: 000000000100000002000000030000000600000007000000
+  cancellableIntoWalk: 00000000010000000600000007000000
   gravity: 0.03
   jumpVel: 0.4
   baseHealth: 0
-  walkSpeed: 0
+  walkSpeed: 0.05
   runSpeed: 0
   actionable: 1
   stateAnimation:
@@ -801,10 +849,28 @@ MonoBehaviour:
   - Hold
   - Jump
   - Falling
+  - Walking
+  - Walking
+  - Walking
   stateAnimationTransition:
   - fromState: 3
     toState: 0
     transitionTime: 0.25
+  - fromState: 5
+    toState: 0
+    transitionTime: 0.1
+  - fromState: 0
+    toState: 6
+    transitionTime: 0.1
+  - fromState: 0
+    toState: 7
+    transitionTime: 0.1
+  - fromState: 6
+    toState: 0
+    transitionTime: 0.1
+  - fromState: 7
+    toState: 0
+    transitionTime: 0.1
   _state: 0
   bufferState: 0
   yVel: 0
@@ -832,7 +898,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3726105978068942533}
-  m_LocalRotation: {x: -0, y: 0, z: 0.9210555, w: -0.38943127}
+  m_LocalRotation: {x: -0, y: 0, z: 0.9463053, w: -0.32327434}
   m_LocalPosition: {x: -0.01814492, y: -0.09786172, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -864,7 +930,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3755740607695297534}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7790929, w: 0.6269085}
+  m_LocalRotation: {x: 0, y: 0, z: 0.892648, w: 0.45075446}
   m_LocalPosition: {x: 2.0473983, y: 0.066022515, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -896,7 +962,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3787037976414516923}
-  m_LocalRotation: {x: 0, y: 0, z: -0.40729147, w: 0.91329825}
+  m_LocalRotation: {x: 0, y: 0, z: -0.39958647, w: 0.91669554}
   m_LocalPosition: {x: 2.0190096, y: -0.0034382343, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1089,7 +1155,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7010802779126220268}
-  m_LocalRotation: {x: 0, y: 0, z: 0.99442595, w: -0.10543766}
+  m_LocalRotation: {x: 0, y: 0, z: 0.9992235, w: -0.039401747}
   m_LocalPosition: {x: -0.026249994, y: 0.035289116, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1121,7 +1187,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7298902231760498150}
-  m_LocalRotation: {x: 0, y: 0, z: -0.78078955, w: 0.6247942}
+  m_LocalRotation: {x: 0, y: 0, z: -0.91206264, w: 0.41005093}
   m_LocalPosition: {x: 0.9240238, y: -0.035721943, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1129,7 +1195,7 @@ Transform:
   - {fileID: 5390873649519762958}
   m_Father: {fileID: 8843417291098590969}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 258.27}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 204.064}
 --- !u!1 &7582187478555292472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,7 +1219,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7582187478555292472}
-  m_LocalRotation: {x: 0, y: 0, z: -0.5261846, w: 0.8503704}
+  m_LocalRotation: {x: 0, y: 0, z: -0.5280639, w: 0.8492047}
   m_LocalPosition: {x: 1.8147187, y: 0.022922516, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1193,3 +1259,13 @@ Transform:
   m_Father: {fileID: 4520368441307116731}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 34.89}
+--- !u!1029 &102900000
+DefaultAsset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TestPlayer
+  m_Message: .prefab file is not a prefab. There are no GameObjects in the file.
+    Did you give the asset the wrong extension?
+  m_IsWarning: 1
