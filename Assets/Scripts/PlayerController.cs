@@ -149,6 +149,15 @@ public class PlayerController : MonoBehaviour
     public void SetOtherPlayer(PlayerController player){
         otherPlayer = player;
     }
+    public void lightAttack(){
+
+    }
+    public void heavyAttack(){
+
+    }
+    public void specialAttack(){
+        
+    }
     public void moveInput(InputAction.CallbackContext context){
         Vector2 input = context.ReadValue<Vector2>();
         //Up down should take priority in state over left/right
