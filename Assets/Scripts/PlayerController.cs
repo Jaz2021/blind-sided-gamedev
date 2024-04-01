@@ -98,6 +98,7 @@ public class PlayerController : MonoBehaviour
         public float transitionTime;
     }
     [SerializeField] private AnimationTransitionTime[] stateAnimationTransition = new AnimationTransitionTime[Enum.GetValues(typeof(State)).Length]; 
+    [SerializeField]
 
     private State _state = State.Idle;
     /// <summary>
@@ -166,7 +167,7 @@ public class PlayerController : MonoBehaviour
             }
             
         } else if(input.x > 0f){
-            if(otherPlayer.gameObject.transform.position.x > transform.position.x){
+            // if(otherPlayer.gameObject.transform.position.x > transform.position.x){
                 //If the other player is on the right of this player
                 if(input.y == 0f){
                     if(state == State.Crouch || state == State.CrouchStart){
@@ -190,15 +191,32 @@ public class PlayerController : MonoBehaviour
                     //Jumping to the right
                     bufferXVel = walkSpeed;
                 }
-            } else {
-                bufferState = State.BlockReady;
-            }
+            // } else {
+                // bufferState = State.BlockReady;
+            // }
         } else if(input.x < 0){
-            if(otherPlayer.gameObject.transform.position.x < transform.position.x){
-                bufferState = State.WalkLeft;
-            } else {
-                bufferState = State.WalkRight;
-            }
+            if(input.y == 0f){
+                    if(state == State.Crouch || state == State.CrouchStart){
+                        bufferState = State.CrouchEnd;
+                        bufferXVel = 0f;
+                    } else {
+                        bufferState = State.WalkLeft;
+                        bufferXVel = -walkSpeed;
+                    }
+                } else if(input.y < 0){
+                    // print("Buffering crouch");
+                    bufferState = State.CrouchStart;
+                } else {
+                    //Y > 0
+                    bufferState = State.JumpStart;
+                }
+                if(bufferState != State.JumpStart){
+                    bufferState = State.WalkLeft;
+                    bufferXVel = -walkSpeed;
+                } else {
+                    //Jumping to the right
+                    bufferXVel = -walkSpeed;
+                }
 
         }
         if(startBuffer == bufferState){
@@ -210,14 +228,14 @@ public class PlayerController : MonoBehaviour
         if(transform.position.y > -2.5f){
             yVel -= gravity;
             transform.position = new Vector3(transform.position.x + xVel, transform.position.y + yVel, transform.position.z);
-        } else if(transform.position.y < -2.5f){
+        } else{
+
             transform.position = new Vector3(transform.position.x + xVel, -2.5f, transform.position.z);
         }
     }
     private void FixedUpdate() {
         
         //Clamp the position
-        // transform.position = (transform.position.y > -2.5) ? new Vector3(transform.position.x, -2.5f, transform.position.z) : transform.position; 
         //Setting position in fixedUpdate so that game ticks will always see the proper position of the player
         // This is going to be used to create game "ticks" where every action takes a certain number of ticks to complete
         setPos();
@@ -270,11 +288,16 @@ public class PlayerController : MonoBehaviour
                 break;
             case State.Idle:
                 xVel = 0;
+                bufferXVel = 0;
                 yVel = 0;
                 break;
             case State.WalkLeft:
+                yVel = 0;
+                xVel = -walkSpeed;
+                break;
             case State.WalkRight:
                 yVel = 0;
+                xVel = walkSpeed;
                 break;
             
 
@@ -313,6 +336,12 @@ public class PlayerController : MonoBehaviour
                 if(cancellableIntoWalk.Contains(state)){
                     xVel = walkSpeed;
                     state = State.WalkRight;
+                }
+                break;
+            case State.WalkLeft:
+                if(cancellableIntoWalk.Contains(state)){
+                    xVel = -walkSpeed;
+                    state = State.WalkLeft;
                 }
                 break;
             default:

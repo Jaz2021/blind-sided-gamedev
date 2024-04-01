@@ -714,7 +714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1160920646
+  GlobalObjectIdHash: 3121945578
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -784,10 +784,10 @@ MonoBehaviour:
   crouchStartupFrames: 3
   crouchEndFrames: 3
   jumpStartupFrames: 5
-  cancellableIntoCrouch: 00000000
+  cancellableIntoCrouch: 000000000600000007000000
   cancellableIntoIdle: 0600000007000000
   cancellableIntoJump: 000000000100000002000000030000000600000007000000
-  cancellableIntoWalk: 00000000
+  cancellableIntoWalk: 0000000001000000
   gravity: 0.03
   jumpVel: 0.4
   baseHealth: 0
@@ -823,6 +823,7 @@ MonoBehaviour:
   - fromState: 7
     toState: 0
     transitionTime: 0.1
+  _state: 0
   bufferState: 0
   yVel: 0
   xVel: 0
