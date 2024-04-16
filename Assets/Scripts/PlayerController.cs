@@ -2,7 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
+
 
 // using System.Numerics;
 using UnityEngine;
@@ -14,37 +17,23 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     private const float secondsPerTick = 1f/60f;
 
-    private PlayerController otherPlayer;
+    public PlayerController otherPlayer {
+        get;
+        private set;
+    }
+    public int playerNum;
     private Animator animator;
     [Header("Set in inspector")]
     [Header("Sound effects")]
     [SerializeField]
     private AudioClip walkSound;
-    [Header("Action timings")]
-    [Header("Frames in this context refer to game ticks, using frames because thats the standard term in fighting games")]
-    [SerializeField]
-    private int crouchStartupFrames; //The number of frames before the 
-    [SerializeField]
-    private int crouchEndFrames;
-    [SerializeField]
-    private int jumpStartupFrames;
-
-    [SerializeField]
-    private State[] cancellableIntoCrouch; //What states can be cancelled into crouch
-    [SerializeField]
-    private State[] cancellableIntoIdle;
-    [SerializeField]
-    private State[] cancellableIntoJump;
-    [SerializeField]
-    private State[] cancellableIntoWalk;
-
 
 
     [Header("Character stats")]
     [SerializeField]
     private float gravity;
     [SerializeField]
-    private float jumpVel;
+    public float jumpVel;
     [SerializeField]
     private float baseHealth;
     [SerializeField]
@@ -54,335 +43,161 @@ public class PlayerController : MonoBehaviour
 
 
     
-    [HideInInspector]
+    // [HideInInspector]
     public bool actionable = false;
-    [SerializeField]
-    public enum State{
-        Idle, // 0
-        CrouchStart, //1
-        Crouch, // 2
-        CrouchEnd, // 3
-        JumpStart, // 4
-        Airborn, // 5
-        WalkRight, // 6
-        WalkLeft, // 7
-        BlockReady // 8
-    }
-
-
-    public State state {
+    [HideInInspector]
+    public float pitch;
+    private Vector2 stick = Vector2.zero;
+    private new bool light = false;
+    private bool heavy = false;
+    private bool special = false;
+    private bool facingRight {
         get {
-            return _state;
+            if(otherPlayer != null){
+                if(otherPlayer.transform.position.x > transform.position.x){
+                    transform.rotation = MultiplayerController.s.GetStartRotation(1);
+                    return true;
+                } else {
+                    transform.rotation = MultiplayerController.s.GetStartRotation(2);
+                    return false;
+                }
+                // return otherPlayer.transform.position.x > transform.position.x;
+            } else {
+                return true;
+            }
+        }
+    }
+    public bool gameStarted = false;
+    public delegate void Input(Vector2 movement, bool light, bool heavy, bool special, bool facingRight);
+    public Input inputFunc{
+        get{
+            return _inputFunc;
         }
         set {
-            if(stateAnimation[(int)value] == "Hold"){
-                //Ignore animation
-            } else {
-                print("Changing animation to: " + stateAnimation[(int)value]);
-                //Get transition time
-                float transTime = 0f;
-                foreach(var transitionTime in stateAnimationTransition){
-                    if(transitionTime.fromState == state && transitionTime.toState == value){
-                        transTime = transitionTime.transitionTime;
-                    }
-                }
-                animator.CrossFade(stateAnimation[(int)value], transTime);
-                //Play the proper animation
-            }
-            _state = value;
+            _inputFunc = value;
+            // print("Input func changed to " + value.ToString());
         }
     }
-    [Header("Indexes correspond to State enum, see code for indexes")]
-    [Header("Use \"Hold\" when an animation will be the same as the previous state, these will be ignored when the state changes")]
-    
-    [SerializeField] private string[] stateAnimation = new string[Enum.GetValues(typeof(State)).Length]; 
-    [Serializable]
-    struct AnimationTransitionTime{
-        public State fromState;
-        public State toState;
-        public float transitionTime;
-    }
-    [SerializeField] private AnimationTransitionTime[] stateAnimationTransition = new AnimationTransitionTime[Enum.GetValues(typeof(State)).Length]; 
-    [SerializeField]
+    private Input _inputFunc;
 
-    private State _state = State.Idle;
-    /// <summary>
-    /// The state that is next to come up. Typically is based on what button is being held
-    /// </summary>
-    public State bufferState = State.Idle;
-    private int framesActive = 0;
     public float yVel = 0;
-    
-    private Quaternion defaultRot;
-    private Quaternion otherRot;
-    private bool Airborn {
-        get{
-            return transform.position.y != -2.5f;
-        }
-    }
     public float xVel = 0f;
-    private float bufferXVel = 0f;
+    private new AudioSource audio;
     private void Update() {
-        if(transform.position.y < -2.5f){
-            // print("Went out of bounds");
-            // print(transform.position.y);
-            transform.position = new Vector3(transform.position.x, -2.5f, transform.position.z);
-        }
+        
+    }
+    public void Hit(Vector3 knockback, float damage, int hitstun){
+        yVel = knockback.y;
+        print(playerNum + " got hit");
+    }
+    public void setReady(){
+        print("Setting ready");
+        MultiplayerController.s.PlayerReady(playerNum);
     }
     private void Start() {
         animator = GetComponentInChildren<Animator>();
+        if(animator == null){
+            throw new System.Exception("No animator found!");
+        }
         actionable = false;
         print("Creating a new player");
         if(MultiplayerController.s.player1 == null){
+            playerNum = 0;
             MultiplayerController.s.player1 = gameObject;
             transform.position = MultiplayerController.s.GetStartPosition(1);
             transform.rotation = MultiplayerController.s.GetStartRotation(1);
-            defaultRot = transform.rotation;
-            otherRot = MultiplayerController.s.GetStartRotation(2);
-            MultiplayerController.s.PlayerReady(1);
+            // MultiplayerController.s.PlayerReady(1);
         } else if(MultiplayerController.s.player2 == null){
+            playerNum = 1;
             MultiplayerController.s.player2 = gameObject;
             transform.position = MultiplayerController.s.GetStartPosition(2);
             transform.rotation = MultiplayerController.s.GetStartRotation(2);
-            otherRot = transform.rotation;
-            defaultRot = MultiplayerController.s.GetStartRotation(1);
-            MultiplayerController.s.PlayerReady(2);
+            // MultiplayerController.s.PlayerReady(2);
         } else {
             throw new System.Exception("Error: Attempted to have a third player join");
         }
+        audio = GetComponent<AudioSource>();
+    }
+    public void playAnimation(string animation, float transitionTime){
+        animator.CrossFadeInFixedTime(animation, transitionTime);
+    }
+    public void EndSetup(){
+        print("Exited setup");
+        gameObject.layer = 6 + playerNum;
+        gameStarted = true;
+    }
+    public void ActivateIdleFunc(){
+        inputFunc = GetComponentInChildren<AnimationEventManager>().IdleInput;
     }
     public void SetOtherPlayer(PlayerController player){
         otherPlayer = player;
     }
     public void lightAttack(){
-        if(Airborn){
-            
-        }
+        light = true;
+        heavy = false;
+        special = false;
     }
     public void heavyAttack(){
-
+        heavy = true;
+        special = false;
+        light = false;
     }
-    public void specialAttack(){
-
+    public void playAudio(AudioClip audio, bool directional = true){
+        if(directional){
+            this.audio.panStereo = (this.transform.position.x - Camera.main.transform.position.x) * 0.25f;
+        } else {
+            this.audio.panStereo = 0f;
+        }
+        this.audio.PlayOneShot(audio);
     }
     public void moveInput(InputAction.CallbackContext context){
-        Vector2 input = context.ReadValue<Vector2>();
-        //Up down should take priority in state over left/right
-        // Left/right movements depend on up/down state but not vice versa
-        //We never set our State here, only the bufferState
-        State startBuffer = bufferState;
-        if(input.x == 0f){
-            
-            if(input.y == 0f){
-                if(state == State.Crouch || state == State.CrouchStart){
-                    bufferState = State.CrouchEnd;
-                } else {
-                    bufferState = State.Idle;
-                }
-            } else if(input.y < 0f){
-                // print("Buffering crouch");
-                bufferState = State.CrouchStart;
-            } else {
-                //Y > 0
-                if(!Airborn){
-                    bufferState = State.JumpStart;
+        stick = context.ReadValue<Vector2>();
 
-                }
-            }
-            
-        } else if(input.x > 0f){
-            // if(otherPlayer.gameObject.transform.position.x > transform.position.x){
-                //If the other player is on the right of this player
-                if(input.y == 0f){
-                    if(state == State.Crouch || state == State.CrouchStart){
-                        state = State.CrouchEnd;
-                        framesActive = 0;
-                        bufferState = State.WalkRight;
-                        bufferXVel = 0f;
-                    } else {
-                        bufferState = State.WalkRight;
-                        bufferXVel = walkSpeed;
-                    }
-                } else if(input.y < 0){
-                    // print("Buffering crouch");
-                    bufferState = State.CrouchStart;
-                } else {
-                    //Y > 0
-                    if(!Airborn){
-                        bufferState = State.JumpStart;
-                        bufferXVel = walkSpeed;
-                    }
-                    
-                }
-            // } else {
-                // bufferState = State.BlockReady;
-            // }
-        } else if(input.x < 0){
-            if(input.y == 0f){
-                    if(state == State.Crouch || state == State.CrouchStart){
-                        state = State.CrouchEnd;
-                        framesActive = 0;
-                        bufferState = State.WalkLeft;
-                        bufferXVel = 0f;
-                    } else {
-                        bufferState = State.WalkLeft;
-                        bufferXVel = -walkSpeed;
-                    }
-                } else if(input.y < 0){
-                    // print("Buffering crouch");
-                    bufferState = State.CrouchStart;
-                } else {
-                    //Y > 0
-                    if(!Airborn){
-                        bufferState = State.JumpStart;
-                        bufferXVel = -walkSpeed;
-                    }
-                    
-                }
-
+    }
+    public void zeroXVelocity(){
+        xVel = 0;
+    }
+    /// <summary>
+    /// Sets the players velocity to the speed they walk backwards while blocking
+    /// </summary>
+    /// <param name="facingRight">The direction the motion should be in, true for right</param>
+    public void addBlockXVel(){
+        // Block velocity will be half of walk vel
+        if(!facingRight){
+            xVel = 0.5f * walkSpeed;
         }
-        if(startBuffer == bufferState){
-
+        else {
+            xVel = -0.5f * walkSpeed;
         }
-    
+    }
+    /// <summary>
+    /// Sets the player's x velocity to the speed they walk forwards/jump
+    /// </summary>
+    /// <param name="facingRight">The direction the motion should be in, true for right</param>
+    public void addWalkXVel(){
+        print("Adding walking velocity");
+        if(facingRight){
+            xVel = walkSpeed;
+        } else {
+            xVel = -walkSpeed;
+        }
+    }
+    public void zeroXVel(){
+        xVel = 0;
     }
     private void setPos(){
-        if(otherPlayer == null){
-            return;
-        }
-        if(!Airborn){
-            // We don't turn around in the air
-            if(otherPlayer.gameObject.transform.position.x > transform.position.x){
-                transform.rotation = defaultRot;
-            } else {
-                transform.rotation = otherRot;
-            }
-        }
+        transform.position = new Vector3(transform.position.x + xVel, Mathf.Max(transform.position.y + yVel, -2.5f));
+        yVel -= gravity;
         
-        if(transform.position.y > -2.5f){
-            yVel -= gravity;
-            transform.position = new Vector3(transform.position.x + xVel, transform.position.y + yVel, transform.position.z);
-        } else{
-
-            transform.position = new Vector3(transform.position.x + xVel, -2.5f, transform.position.z);
-        }
     }
     private void FixedUpdate() {
-        
-        //Clamp the position
-        //Setting position in fixedUpdate so that game ticks will always see the proper position of the player
-        // This is going to be used to create game "ticks" where every action takes a certain number of ticks to complete
         setPos();
-        if(!actionable){
-            //Prevent the player from having control if they aren't actionable
-            return;
+        if(actionable){
+            inputFunc?.Invoke(stick, light, heavy, special, facingRight);
         }
-        switch (state)
-        {
-            case State.CrouchStart:
-                framesActive += 1;
-                yVel = 0;
-                xVel = 0;
-                bufferXVel = 0;
-                if(framesActive == crouchStartupFrames){
-                    framesActive = 0;
-                    state = State.Crouch;
-                    
-                }
-                break;
-            case State.CrouchEnd:
-                framesActive += 1;
-
-                if(framesActive == crouchEndFrames){
-                    // print("Crouch ended");
-                    framesActive = 0;
-                    state = State.Idle;
-                }
-                break;
-            case State.JumpStart:
-                framesActive += 1;
-                if(framesActive == jumpStartupFrames){
-                    print("Going arborn");
-                    framesActive = 0;
-                    state = State.Airborn;
-                    transform.position = new Vector3(transform.position.x + bufferXVel, -2.499f, transform.position.z);
-                    xVel = bufferXVel;
-                    yVel = jumpVel;
-                }
-                break;
-            case State.Airborn:
-                print("Went airborn");
-                // The bottom of the fraction determines max height somehow
-                // The 20x determines the frames in the air
-                if(Airborn){
-                    framesActive += 1;
-                } else {
-                    print("Landed");
-                    framesActive = 0;
-                    state = State.Idle;
-                }
-                break;
-            case State.Idle:
-                xVel = 0;
-                bufferXVel = 0;
-                yVel = 0;
-                break;
-            case State.WalkLeft:
-                yVel = 0;
-                xVel = -walkSpeed;
-                break;
-            case State.WalkRight:
-                yVel = 0;
-                xVel = walkSpeed;
-                // AudioSource.PlayClipAtPoint(walkEffect, transform.position);
-                break;
-            
-
-            default:
-                
-                break;
-        }
-        switch (bufferState)
-        {
-            case State.CrouchStart:
-                if(cancellableIntoCrouch.Contains(state)){
-                    state = bufferState;
-                    framesActive = 0;
-                }
-                break;
-            case State.Idle:
-                if(cancellableIntoIdle.Contains(state)){
-                    state = bufferState;
-                    framesActive = 0;
-                }
-                break;
-            case State.CrouchEnd:
-                //This doesn't need to check if it is cancellable since it will always come from a crouch
-                state = bufferState;
-                
-                bufferState = State.Idle;
-                framesActive = 0;
-                break;
-            case State.JumpStart:
-                if(cancellableIntoJump.Contains(state)){
-                    state = bufferState;
-                    framesActive = 0;
-                }
-                break;
-            case State.WalkRight:
-                if(cancellableIntoWalk.Contains(state) && state != State.WalkRight){
-                    xVel = walkSpeed;
-                    state = State.WalkRight;
-                }
-                break;
-            case State.WalkLeft:
-                if(cancellableIntoWalk.Contains(state) && state != State.WalkLeft){
-                    xVel = -walkSpeed;
-                    state = State.WalkLeft;
-                }
-                break;
-            default:
-                break;
-        }
+        light = false;
+        heavy = false;
+        special = false;
+        
     }
 }

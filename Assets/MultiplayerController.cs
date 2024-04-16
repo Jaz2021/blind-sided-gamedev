@@ -11,6 +11,8 @@ public class MultiplayerController : MonoBehaviour
     [Header("Set in inspector")]
     [SerializeField] private Vector3[] startPositions;
     [SerializeField] private Quaternion[] startRotations;
+    [SerializeField] private float pitchP1, pitchP2; 
+    
     private bool[] playerReady = {false, false};
     // Start is called before the first frame update
     void Start()
@@ -34,14 +36,18 @@ public class MultiplayerController : MonoBehaviour
         return startRotations[player - 1];
     }
     public void PlayerReady(int player){
-        playerReady[player - 1] = true;
-        if(playerReady[player % 2]){
+        playerReady[player] = true;
+        print(player);
+        if(playerReady[1]){
+            print("Should end setup");
             PlayerController p1 = player1.GetComponent<PlayerController>();
             PlayerController p2 = player2.GetComponent<PlayerController>();
+            p1.pitch = pitchP1;
+            p2.pitch = pitchP2;
             p1.SetOtherPlayer(p2);
             p2.SetOtherPlayer(p1);
-            p1.actionable = true;
-            p2.actionable = true;
+            p1.EndSetup();
+            p2.EndSetup();
             var c = Camera.main.GetComponent<CameraFollow>();
             c.player1 = player1;
             c.player2 = player2;
