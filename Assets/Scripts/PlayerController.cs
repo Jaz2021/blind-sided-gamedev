@@ -16,6 +16,22 @@ public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
     private const float secondsPerTick = 1f/60f;
+    public float Health {
+        get {
+            return health;
+        }
+        set {
+            healthbar.health = value;
+            health = value;
+            if(value <= 0){
+                print("Game over!");
+                
+            }
+        }
+    }
+    [SerializeField]
+    private float health = maxHealth;
+    public const float maxHealth = 100f;
 
     public PlayerController otherPlayer {
         get;
@@ -40,7 +56,10 @@ public class PlayerController : MonoBehaviour
     private float walkSpeed;
     [SerializeField]
     private float runSpeed;
+    [SerializeField]
+    private float hitstunFriction; //The amount that the x velocity should slow down each tick while in hitstun. Outside of hitstun, you won't slow down in the air
 
+    public Healthbar healthbar;
 
     
     // [HideInInspector]
@@ -83,12 +102,42 @@ public class PlayerController : MonoBehaviour
     public float yVel = 0;
     public float xVel = 0f;
     private new AudioSource audio;
+    private int curHitstun = 0;
+    
     private void Update() {
         
     }
     public void Hit(Vector3 knockback, float damage, int hitstun){
         yVel = knockback.y;
         print(playerNum + " got hit");
+    }
+    void OnTriggerEnter2D(Collider2D other){
+        // print("Something entered the trigger");
+        if(other.tag == "hitbox"){
+            // print("Hitbox entered the trigger");
+            
+            var h = other.GetComponent<Hitbox>();
+            if(h.player == this){
+                // print("it was this player");
+                return;
+            }
+            // print(h.knockback);
+            Health -= h.damage;
+            curHitstun = h.hitstun;
+            if(facingRight){
+
+                xVel = -h.knockback.x;
+
+            } else {
+                xVel = h.knockback.x;
+            }
+            yVel = h.knockback.y;
+            var hitEffect = Instantiate(h.hitEffect);
+            hitEffect.transform.position = h.transform.position;
+            hitEffect.transform.rotation = Quaternion.FromToRotation(Vector3.right, new Vector3(xVel, yVel));
+        } else {
+            // print(other.tag);
+        }
     }
     public void setReady(){
         print("Setting ready");
@@ -175,7 +224,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     /// <param name="facingRight">The direction the motion should be in, true for right</param>
     public void addWalkXVel(){
-        print("Adding walking velocity");
+        // print("Adding walking velocity");
         if(facingRight){
             xVel = walkSpeed;
         } else {
@@ -188,13 +237,19 @@ public class PlayerController : MonoBehaviour
     private void setPos(){
         transform.position = new Vector3(transform.position.x + xVel, Mathf.Max(transform.position.y + yVel, -2.5f));
         yVel -= gravity;
+        if(curHitstun != 0){
+            xVel -= hitstunFriction;
+        }
         
     }
     private void FixedUpdate() {
         setPos();
-        if(actionable){
+        if(actionable && curHitstun <= 0){
             inputFunc?.Invoke(stick, light, heavy, special, facingRight);
+        } else {
+            curHitstun -= 1;
         }
+
         light = false;
         heavy = false;
         special = false;

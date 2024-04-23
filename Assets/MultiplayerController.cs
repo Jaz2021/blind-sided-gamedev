@@ -48,9 +48,16 @@ public class MultiplayerController : MonoBehaviour
             p2.SetOtherPlayer(p1);
             p1.EndSetup();
             p2.EndSetup();
+            p1.healthbar = GameObject.Find("HealthbarP1").GetComponent<Healthbar>();
+            p2.healthbar = GameObject.Find("HealthbarP2").GetComponent<Healthbar>();
+            p1.healthbar.setVisible();
+            p1.healthbar.pc = p1;
+            p2.healthbar.pc = p2;
+            p2.healthbar.setVisible();
             var c = Camera.main.GetComponent<CameraFollow>();
             c.player1 = player1;
             c.player2 = player2;
+            
         }
     }
 }

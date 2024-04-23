@@ -47,19 +47,19 @@ public partial class AnimationEventManager : MonoBehaviour
     /// </summary>
     /// <param name="a">Whether a player is actionable</param>
     public void setActionable(){
-        print("Should be actionable");
+        // print("Should be actionable");
         if(player.gameStarted){
             player.actionable = true;
 
         }
     }
     public void playAudioEffectPanned(int index){
-        print("Playing audio");
+        // print("Playing audio");
         audio.panStereo = (player.transform.position.x - Camera.main.transform.position.x) / 15f;
         audio.PlayOneShot(soundEffects[index]);
     }
     public void setUnactionable(){
-        print("Should be non actionable");
+        // print("Should be non actionable");
         player.actionable = false;
     }
     public void waitForHit(){
@@ -76,6 +76,7 @@ public partial class AnimationEventManager : MonoBehaviour
         // Not really a fan of the whole setup but it is all right I guess
         // If this needs to be optimized, create a list of gameobjects for each possible hitbox and activate them whenever needed
         var h = Instantiate(hitbox);
+
         var data = hitboxes[index];
         h.transform.parent = this.transform.parent;
         h.transform.localPosition = data.pos;
@@ -85,7 +86,9 @@ public partial class AnimationEventManager : MonoBehaviour
         hit.player = player;
         hit.damage = data.damage;
         hit.SetLifespan(data.lifespan);
+        hit.knockback = data.knockback;
         hit.hitstun = data.hitstun;
+        h.GetComponent<Rigidbody2D>().WakeUp();
     }
     public void EntranceStarted(){
         player.actionable = false;
@@ -124,7 +127,7 @@ public partial class AnimationEventManager : MonoBehaviour
         player.inputFunc = HeavyAttackInput;
     }
     public void StandHeavyEnd(){
-        print("Stand heavy ended");
+        // print("Stand heavy ended");
         animator.SetTrigger("idle");
         player.inputFunc = IdleInput;
     }
@@ -146,7 +149,7 @@ public partial class AnimationEventManager : MonoBehaviour
         player.inputFunc = BlockInput;
     }
     public void CrouchBlock(){
-
+        zeroXVelocity();
     }
     public void CrouchHeavy(){
         zeroXVelocity();
@@ -155,9 +158,9 @@ public partial class AnimationEventManager : MonoBehaviour
         player.inputFunc = CrouchHeavyInput;
     }
     public void CrouchHeavyEnd(){
-        print("Crouch heavy end");
-        animator.SetTrigger("idle");
-        player.inputFunc = IdleInput;
+        // print("Crouch heavy end");
+        animator.SetTrigger("crouch");
+        player.inputFunc = CrouchInput;
     }
     public void Jump(){
         animator.ResetTrigger("jump");
@@ -184,7 +187,7 @@ public partial class AnimationEventManager : MonoBehaviour
         player.inputFunc = lightAttackInput;
     }
     public void StandLightEnd(){
-        print("Stand light should be over");
+        // print("Stand light should be over");
         animator.SetTrigger("idle");
     }
     public void JumpHeavy(){
