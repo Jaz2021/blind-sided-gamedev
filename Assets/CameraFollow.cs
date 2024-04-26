@@ -9,6 +9,7 @@ public class CameraFollow : MonoBehaviour
     [SerializeField]
     private float followHeight; //The height at which the camera should follow a specific player rather than the center point between the two
     private Vector3 cameraMaxPoint;
+    private Vector3 playerMaxPoint;
     public GameObject player1 = null, player2 = null;
 
     private void Start() {
@@ -31,6 +32,16 @@ public class CameraFollow : MonoBehaviour
             print("Out of bounds, too low");
             transform.position = -cameraMaxPoint;
         }
+        if(player1.transform.position.x > stageMaxX){
+            player1.transform.position = new Vector3(stageMaxX, player1.transform.position.y, player1.transform.position.z);
+        } else if(player1.transform.position.x < -stageMaxX){
+            player1.transform.position = new Vector3(-stageMaxX, player1.transform.position.y, player1.transform.position.z);
+        }
 
+        if(player2.transform.position.x > stageMaxX){
+            player2.transform.position = new Vector3(stageMaxX, player2.transform.position.y, player2.transform.position.z);
+        } else if(player2.transform.position.x < -stageMaxX){
+            player2.transform.position = new Vector3(-stageMaxX, player2.transform.position.y, player2.transform.position.z);
+        }
     }
 }

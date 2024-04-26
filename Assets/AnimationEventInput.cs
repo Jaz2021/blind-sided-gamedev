@@ -206,7 +206,11 @@ public partial class AnimationEventManager : MonoBehaviour {
         } else if(motion.y > 0){
             animator.ResetTrigger("crouchHeavy");
             animator.SetTrigger("jump");
-        } else {
+        } else if (motion.y < 0){
+            animator.ResetTrigger("crouchHeavy");
+            animator.SetTrigger("crouch");
+        }
+            else {
             if (special){
                 animator.ResetTrigger("crouchHeavy");
                 animator.SetTrigger("crouchSpecial");

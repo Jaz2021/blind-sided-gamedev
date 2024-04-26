@@ -8,7 +8,11 @@ public class SpawnAPlayer : MonoBehaviour
    // Start is called before the first frame update
     public void pressed(){
         if(MultiplayerController.s.player2 == null){
-            Instantiate(player);
+            
+            var p = Instantiate(player);
+            var controller = p.GetComponent<PlayerController>();
+            controller.npc = true;  
+
         } else {
             Destroy(gameObject);
         }

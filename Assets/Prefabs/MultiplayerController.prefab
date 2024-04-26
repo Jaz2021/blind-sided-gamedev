@@ -99,3 +99,5 @@ MonoBehaviour:
   - {x: 0, y: 1, z: 0, w: -0.00000004371139}
   pitchP1: 0
   pitchP2: 0.5
+  mainMenu: {fileID: 3389578192682107855, guid: 2ff272324176a757e9cab8bd7a6b84c6, type: 3}
+  winScreen: {fileID: 33165673700979798, guid: 93c629a9364263810a3df82fb8e96f10, type: 3}

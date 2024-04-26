@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 public class MultiplayerController : MonoBehaviour
@@ -12,6 +14,7 @@ public class MultiplayerController : MonoBehaviour
     [SerializeField] private Vector3[] startPositions;
     [SerializeField] private Quaternion[] startRotations;
     [SerializeField] private float pitchP1, pitchP2; 
+    [SerializeField] private GameObject mainMenu, winScreen;
     
     private bool[] playerReady = {false, false};
     // Start is called before the first frame update
@@ -59,5 +62,28 @@ public class MultiplayerController : MonoBehaviour
             c.player2 = player2;
             
         }
+    }
+    private GameObject win;
+    public void GameOver(int winner){
+        Time.timeScale = 0.01f;
+        win = Instantiate(winScreen);
+        win.transform.SetParent(GameObject.Find("MenuHome").transform);
+        win.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+        win.GetComponent<TextMeshProUGUI>().text = "Player " + winner + "wins!";
+        Invoke("gameOverNextStep", 0.1f);
+        
+
+    }
+    public void gameOverNextStep(){
+        Destroy(win);
+        var mm = Instantiate(mainMenu);
+        mm.transform.SetParent(GameObject.Find("MenuHome").transform);
+        player1.GetComponent<PlayerController>().healthbar.health = PlayerController.maxHealth;
+        player2.GetComponent<PlayerController>().healthbar.health = PlayerController.maxHealth;
+
+        Destroy(player1.gameObject);
+        Destroy(player2.gameObject);
+        Time.timeScale = 1f;
+        Destroy(gameObject);
     }
 }

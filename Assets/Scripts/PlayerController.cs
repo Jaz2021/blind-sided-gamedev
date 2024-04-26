@@ -22,16 +22,22 @@ public class PlayerController : MonoBehaviour
         }
         set {
             healthbar.health = value;
-            health = value;
             if(value <= 0){
+                value = 0;
                 print("Game over!");
+                MultiplayerController.s.GameOver(otherPlayer.playerNum);
                 
             }
+            health = value;
+
         }
     }
     [SerializeField]
     private float health = maxHealth;
+    [SerializeField]
+    private AudioClip hitsound;
     public const float maxHealth = 100f;
+    public bool npc = false;
 
     public PlayerController otherPlayer {
         get;
@@ -108,6 +114,7 @@ public class PlayerController : MonoBehaviour
         
     }
     public void Hit(Vector3 knockback, float damage, int hitstun){
+
         yVel = knockback.y;
         print(playerNum + " got hit");
     }
@@ -135,6 +142,7 @@ public class PlayerController : MonoBehaviour
             var hitEffect = Instantiate(h.hitEffect);
             hitEffect.transform.position = h.transform.position;
             hitEffect.transform.rotation = Quaternion.FromToRotation(Vector3.right, new Vector3(xVel, yVel));
+            playAudio(hitsound);
         } else {
             // print(other.tag);
         }
@@ -244,7 +252,7 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate() {
         setPos();
-        if(actionable && curHitstun <= 0){
+        if(actionable && curHitstun <= 0 && !npc){
             inputFunc?.Invoke(stick, light, heavy, special, facingRight);
         } else {
             curHitstun -= 1;

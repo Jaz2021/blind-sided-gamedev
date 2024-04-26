@@ -137,10 +137,12 @@ public partial class AnimationEventManager : MonoBehaviour
         player.inputFunc = WalkInput;
     }
     public void Crouch(){
+        print("Entered crouch");
         zeroXVelocity();
         animator.ResetTrigger("crouch");
 
         player.inputFunc = CrouchInput;
+        
     }
     public void StandBlock(){
         zeroXVelocity();
